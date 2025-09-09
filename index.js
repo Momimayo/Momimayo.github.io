@@ -35,7 +35,7 @@ class AppleUI {
         });
         
         // 加载保存的主题
-        const savedTheme = localStorage.getItem('theme') || 'dark';
+        const savedTheme = localStorage.getItem('theme') || 'light';
         body.setAttribute('data-theme', savedTheme);
         themeIcon.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
     }
@@ -121,7 +121,7 @@ class AppleUI {
             top: 20px;
             right: 20px;
             padding: 1rem 2rem;
-            background: var(--glass-bg);
+            background: var(--glass-bg-hover);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             backdrop-filter: blur(20px);
@@ -130,7 +130,7 @@ class AppleUI {
             z-index: 1001;
             transform: translateX(400px);
             transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 30px var(--shadow-medium);
         `;
         
         document.body.appendChild(notification);
