@@ -11,6 +11,7 @@ class AppleUI {
         this.createFloatingElements();
         this.setupScrollAnimations();
         this.addRippleEffect();
+        this.addBreathingAnimation();
         
         console.log('Apple-style UI initialized ✨');
     }
@@ -43,28 +44,32 @@ class AppleUI {
     setupLanguageSelector() {
         const langButtons = document.querySelectorAll('.lang-btn');
         const heroTitle = document.querySelector('.hero-title');
+        const heroSlogan = document.querySelector('.hero-slogan');
         const heroSubtitle = document.querySelector('.hero-subtitle');
         const primaryBtn = document.getElementById('primaryBtn');
         const secondaryBtn = document.getElementById('secondaryBtn');
         
         const translations = {
             zh: {
-                title: '欢迎',
-                subtitle: '简洁、优雅的体验',
-                primary: '开始使用',
-                secondary: '了解更多'
+                title: '侘寂',
+                slogan: 'Grace in the Void',
+                subtitle: '在虚无中发现优雅，在不完美中寻找美的本质<br>Finding elegance in emptiness, discovering beauty in imperfection',
+                primary: '静观',
+                secondary: '冥想'
             },
             ja: {
-                title: 'ようこそ',
-                subtitle: '美しく、ミニマルな体験',
-                primary: '始める',
-                secondary: 'もっと見る'
+                title: '侘寂',
+                slogan: 'Grace in the Void',
+                subtitle: '空虚の中に優雅さを見つけ、不完全さの中に美の本質を探る<br>虚無から生まれる美しさ、欠けたものの中にある完全性',
+                primary: '静観',
+                secondary: '瞑想'
             },
             en: {
-                title: 'Welcome',
-                subtitle: 'A beautiful, minimalist experience',
-                primary: 'Get Started',
-                secondary: 'Learn More'
+                title: 'Wabi-Sabi',
+                slogan: 'Grace in the Void',
+                subtitle: 'Finding elegance in emptiness, discovering beauty in imperfection<br>The art of embracing what is incomplete and transient',
+                primary: 'Contemplate',
+                secondary: 'Meditate'
             }
         };
         
@@ -80,22 +85,27 @@ class AppleUI {
                 
                 // 动画切换文本
                 this.animateTextChange(heroTitle, text.title);
-                this.animateTextChange(heroSubtitle, text.subtitle);
+                this.animateTextChange(heroSlogan, text.slogan);
+                this.animateTextChange(heroSubtitle, text.subtitle, true);
                 this.animateTextChange(primaryBtn, text.primary);
                 this.animateTextChange(secondaryBtn, text.secondary);
             });
         });
     }
     
-    animateTextChange(element, newText) {
+    animateTextChange(element, newText, allowHtml = false) {
         element.style.opacity = '0';
         element.style.transform = 'translateY(10px)';
         
         setTimeout(() => {
-            element.textContent = newText;
+            if (allowHtml) {
+                element.innerHTML = newText;
+            } else {
+                element.textContent = newText;
+            }
             element.style.opacity = '1';
             element.style.transform = 'translateY(0)';
-        }, 150);
+        }, 300);
     }
     
     setupButtons() {
@@ -103,11 +113,11 @@ class AppleUI {
         const secondaryBtn = document.getElementById('secondaryBtn');
         
         primaryBtn.addEventListener('click', () => {
-            this.showNotification('正在启动... ✨', 'success');
+            this.showNotification('静观万物，心如止水 🕯️', 'peace');
         });
         
         secondaryBtn.addEventListener('click', () => {
-            this.showNotification('更多信息即将到来 🚀', 'info');
+            this.showNotification('冥想中，寻找内心的宁静 🧘', 'zen');
         });
     }
     
@@ -151,17 +161,17 @@ class AppleUI {
     
     createFloatingElements() {
         const container = document.getElementById('floatingElements');
-        const numElements = 15;
+        const numElements = 8; // 减少元素数量，体现极简
         
         for (let i = 0; i < numElements; i++) {
             const element = document.createElement('div');
             element.className = 'floating-element';
             
-            // 随机位置和动画延迟
+            // 更加缓慢和静谧的动画
             element.style.left = Math.random() * 100 + '%';
             element.style.top = Math.random() * 100 + '%';
-            element.style.animationDelay = Math.random() * 6 + 's';
-            element.style.animationDuration = (4 + Math.random() * 4) + 's';
+            element.style.animationDelay = Math.random() * 12 + 's';
+            element.style.animationDuration = (8 + Math.random() * 10) + 's';
             
             container.appendChild(element);
         }
@@ -215,6 +225,38 @@ class AppleUI {
                 }, 600);
             });
         });
+    }
+    
+    addBreathingAnimation() {
+        // 为hero背景添加微妙的呼吸效果
+        const heroBackground = document.querySelector('.hero-background');
+        if (heroBackground) {
+            let breathPhase = 0;
+            const breathe = () => {
+                breathPhase += 0.01;
+                const scale = 1 + Math.sin(breathPhase) * 0.02; // 非常微妙的缩放
+                const opacity = 0.6 + Math.sin(breathPhase * 0.7) * 0.1; // 轻微的透明度变化
+                
+                heroBackground.style.transform = `scale(${scale})`;
+                heroBackground.style.opacity = opacity;
+                
+                requestAnimationFrame(breathe);
+            };
+            breathe();
+        }
+        
+        // 为标题添加禅意的文字波动效果
+        const heroTitle = document.querySelector('.hero-title');
+        if (heroTitle) {
+            let wavePhase = 0;
+            const wave = () => {
+                wavePhase += 0.005;
+                const offset = Math.sin(wavePhase) * 0.5; // 极其微妙的移动
+                heroTitle.style.transform = `translateY(${offset}px)`;
+                requestAnimationFrame(wave);
+            };
+            setTimeout(wave, 3000); // 3秒后开始，让用户先看到静态效果
+        }
     }
 }
 
