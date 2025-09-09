@@ -136,19 +136,39 @@
             line-height: 1.8;
         }
         
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .top-nav:hover .language-selector,
+        .top-nav:hover .theme-toggle {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
         .language-selector {
+            position: fixed;
+            top: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
             display: flex;
             justify-content: center;
             gap: 2rem;
-            margin-bottom: 4rem;
             opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInUp 2s ease-out 2s forwards;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            pointer-events: auto;
+            z-index: 1001;
         }
         
         .lang-btn {
             padding: 0.6rem 1.8rem;
-            background: transparent;
+            background: var(--glass-bg-light);
             border: 1px solid var(--border-color);
             border-radius: 0;
             color: var(--text-secondary);
@@ -159,6 +179,8 @@
             font-size: 0.9rem;
             letter-spacing: 0.05em;
             font-weight: 300;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
         
         .lang-btn:hover {
@@ -212,7 +234,7 @@
             flex-wrap: wrap;
             opacity: 0;
             transform: translateY(30px);
-            animation: fadeInUp 2s ease-out 2.4s forwards;
+            animation: fadeInUp 2s ease-out 2s forwards;
         }
         
         .cta-btn {
@@ -264,20 +286,25 @@
         
         .theme-toggle {
             position: fixed;
-            top: 2rem;
+            top: 1.5rem;
             right: 2rem;
             width: 40px;
             height: 40px;
             border-radius: 0;
             border: 1px solid var(--border-color);
-            background: transparent;
+            background: var(--glass-bg-light);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            z-index: 1000;
+            z-index: 1001;
             font-size: 1.2rem;
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: auto;
         }
         
         .theme-toggle:hover {
@@ -378,9 +405,17 @@
 <body data-theme="light">
     <div class="floating-elements" id="floatingElements"></div>
     
-    <button class="theme-toggle" id="themeToggle">
-        <span id="themeIcon">🌙</span>
-    </button>
+    <div class="top-nav">
+        <div class="language-selector">
+            <a href="#" class="lang-btn active" data-lang="zh">中文</a>
+            <a href="#" class="lang-btn" data-lang="ja">日本語</a>
+            <a href="#" class="lang-btn" data-lang="en">English</a>
+        </div>
+        
+        <button class="theme-toggle" id="themeToggle">
+            <span id="themeIcon">🌙</span>
+        </button>
+    </div>
     
     <section class="hero">
         <div class="hero-background"></div>
@@ -388,12 +423,6 @@
             <h1 class="hero-title">侘寂</h1>
             <p class="hero-slogan">Grace in the Void</p>
             <p class="hero-subtitle">在虚无中发现优雅，在不完美中寻找美的本质<br>Finding elegance in emptiness, discovering beauty in imperfection</p>
-            
-            <div class="language-selector">
-                <a href="#" class="lang-btn active" data-lang="zh">中文</a>
-                <a href="#" class="lang-btn" data-lang="ja">日本語</a>
-                <a href="#" class="lang-btn" data-lang="en">English</a>
-            </div>
             
             <div class="cta-buttons">
                 <button class="cta-btn primary" id="primaryBtn">静观</button>

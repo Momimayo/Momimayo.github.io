@@ -12,6 +12,7 @@ class AppleUI {
         this.setupScrollAnimations();
         this.addRippleEffect();
         this.addBreathingAnimation();
+        this.setupTopNavHover();
         
         console.log('Apple-style UI initialized ✨');
     }
@@ -256,6 +257,52 @@ class AppleUI {
                 requestAnimationFrame(wave);
             };
             setTimeout(wave, 3000); // 3秒后开始，让用户先看到静态效果
+        }
+    }
+    
+    setupTopNavHover() {
+        const topNav = document.querySelector('.top-nav');
+        const languageSelector = document.querySelector('.language-selector');
+        const themeToggle = document.querySelector('.theme-toggle');
+        
+        // 为了确保在移动设备上也能正常工作，添加触摸事件支持
+        let hoverTimeout;
+        
+        const showNavElements = () => {
+            clearTimeout(hoverTimeout);
+            if (languageSelector && themeToggle) {
+                languageSelector.style.opacity = '1';
+                languageSelector.style.transform = 'translateX(-50%) translateY(0)';
+                themeToggle.style.opacity = '1';
+                themeToggle.style.transform = 'translateY(0)';
+            }
+        };
+        
+        const hideNavElements = () => {
+            hoverTimeout = setTimeout(() => {
+                if (languageSelector && themeToggle) {
+                    languageSelector.style.opacity = '0';
+                    languageSelector.style.transform = 'translateX(-50%) translateY(-20px)';
+                    themeToggle.style.opacity = '0';
+                    themeToggle.style.transform = 'translateY(-20px)';
+                }
+            }, 500); // 500ms 延迟，防止意外隐藏
+        };
+        
+        if (topNav) {
+            // 鼠标事件
+            topNav.addEventListener('mouseenter', showNavElements);
+            topNav.addEventListener('mouseleave', hideNavElements);
+            
+            // 触摸事件支持（移动设备）
+            topNav.addEventListener('touchstart', showNavElements);
+            
+            // 点击页面其他地方时隐藏（移动设备）
+            document.addEventListener('touchstart', (e) => {
+                if (!topNav.contains(e.target)) {
+                    hideNavElements();
+                }
+            });
         }
     }
 }
