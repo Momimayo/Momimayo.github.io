@@ -1,6 +1,9 @@
 // 苹果风格的现代JavaScript交互
 class AppleUI {
     constructor() {
+        this.currentNotification = null;
+        this.notificationTimeout = null;
+        this.notificationRemovalTimeout = null;
         this.init();
     }
     
@@ -123,9 +126,17 @@ class AppleUI {
     }
     
     showNotification(message, type = 'info') {
+        clearTimeout(this.notificationTimeout);
+        clearTimeout(this.notificationRemovalTimeout);
+
+        if (this.currentNotification) {
+            this.currentNotification.remove();
+        }
+
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         notification.textContent = message;
+        this.currentNotification = notification;
         
         notification.style.cssText = `
             position: fixed;
@@ -147,15 +158,20 @@ class AppleUI {
         document.body.appendChild(notification);
         
         // 滑入动画
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 10);
+        requestAnimationFrame(() => {
+            if (this.currentNotification === notification) {
+                notification.style.transform = 'translateX(0)';
+            }
+        });
         
         // 自动消失
-        setTimeout(() => {
+        this.notificationTimeout = setTimeout(() => {
             notification.style.transform = 'translateX(400px)';
-            setTimeout(() => {
-                document.body.removeChild(notification);
+            this.notificationRemovalTimeout = setTimeout(() => {
+                if (this.currentNotification === notification) {
+                    notification.remove();
+                    this.currentNotification = null;
+                }
             }, 500);
         }, 3000);
     }
