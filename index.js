@@ -300,7 +300,7 @@ class AppleUI {
         window.addEventListener('touchstart', (event) => {
             if (!mobileSlideMode || event.touches.length !== 1) return;
             const target = event.target;
-            touchStartedOnControl = target instanceof Element && Boolean(target.closest('textarea, input, button, a, [contenteditable="true"]'));
+            touchStartedOnControl = target instanceof Element && Boolean(target.closest('textarea, input, button, a, [contenteditable]'));
             touchStartX = event.touches[0].clientX;
             touchStartY = event.touches[0].clientY;
         }, { passive: true });
@@ -326,7 +326,7 @@ class AppleUI {
         }, { passive: true });
 
         window.addEventListener('keydown', (event) => {
-            if (event.target instanceof Element && event.target.closest('button, a, input, textarea, select, [contenteditable="true"]')) return;
+            if (event.target instanceof Element && event.target.closest('button, a, input, textarea, select, [contenteditable]')) return;
 
             if (['ArrowDown', 'PageDown', ' '].includes(event.key)) {
                 event.preventDefault();
@@ -356,26 +356,170 @@ class AppleUI {
     setupTerminal() {
         const terminalWindow = document.getElementById('terminalWindow');
         const terminalEditor = document.getElementById('terminalEditor');
+        const terminalBody = document.getElementById('terminalBody');
+        const terminalCursor = document.getElementById('terminalCursor');
+
+        const getLineInput = (line) => line.querySelector('.terminal-line-input');
+
+        const createLine = (text = '') => {
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+
+            const prompt = document.createElement('span');
+            prompt.className = 'terminal-prompt';
+            prompt.setAttribute('aria-hidden', 'true');
+            prompt.textContent = '>';
+
+            const input = document.createElement('span');
+            input.className = 'terminal-line-input';
+            input.setAttribute('contenteditable', 'plaintext-only');
+            input.setAttribute('autocapitalize', 'off');
+            input.setAttribute('spellcheck', 'false');
+            input.textContent = text;
+
+            line.append(prompt, input);
+            return line;
+        };
+
+        const getSelectionOffsets = (input) => {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) return null;
+
+            const range = selection.getRangeAt(0);
+            if (!input.contains(range.commonAncestorContainer) && range.commonAncestorContainer !== input) return null;
+
+            const beforeStart = document.createRange();
+            beforeStart.selectNodeContents(input);
+            beforeStart.setEnd(range.startContainer, range.startOffset);
+
+            const beforeEnd = document.createRange();
+            beforeEnd.selectNodeContents(input);
+            beforeEnd.setEnd(range.endContainer, range.endOffset);
+
+            return {
+                start: beforeStart.toString().length,
+                end: beforeEnd.toString().length,
+                collapsed: range.collapsed
+            };
+        };
+
+        const setCaret = (input, requestedOffset) => {
+            input.focus({ preventScroll: true });
+            const selection = window.getSelection();
+            const range = document.createRange();
+            const offset = Math.max(0, Math.min(requestedOffset, input.textContent.length));
+            const walker = document.createTreeWalker(input, NodeFilter.SHOW_TEXT);
+            let remaining = offset;
+            let textNode = walker.nextNode();
+
+            while (textNode && remaining > textNode.textContent.length) {
+                remaining -= textNode.textContent.length;
+                textNode = walker.nextNode();
+            }
+
+            if (!textNode) {
+                textNode = document.createTextNode('');
+                input.appendChild(textNode);
+                remaining = 0;
+            }
+
+            range.setStart(textNode, remaining);
+            range.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            requestAnimationFrame(updateCursor);
+        };
+
+        const updateCursor = () => {
+            const activeInput = document.activeElement?.closest?.('.terminal-line-input');
+            const selection = window.getSelection();
+            const fallbackInput = getLineInput(terminalEditor.lastElementChild);
+            const targetInput = activeInput || fallbackInput;
+
+            if (!targetInput) {
+                terminalCursor.classList.remove('visible');
+                return;
+            }
+
+            const range = document.createRange();
+            const activeRange = selection?.rangeCount ? selection.getRangeAt(0) : null;
+            const selectionIsInside = activeInput && activeRange &&
+                (activeInput.contains(activeRange.commonAncestorContainer) || activeRange.commonAncestorContainer === activeInput);
+
+            if (selectionIsInside) {
+                range.setStart(activeRange.endContainer, activeRange.endOffset);
+                range.collapse(true);
+            } else {
+                range.selectNodeContents(targetInput);
+                range.collapse(false);
+            }
+
+            const rangeRect = range.getClientRects()[0];
+            const inputRect = targetInput.getBoundingClientRect();
+            const bodyRect = terminalBody.getBoundingClientRect();
+            const style = window.getComputedStyle(targetInput);
+            const fontSize = parseFloat(style.fontSize);
+            const lineHeight = parseFloat(style.lineHeight) || fontSize * 1.7;
+            const cursorHeight = fontSize * 1.18;
+            const left = (rangeRect?.left ?? inputRect.left) - bodyRect.left + terminalBody.scrollLeft;
+            const topBase = rangeRect?.top ?? inputRect.top;
+            const top = topBase - bodyRect.top + terminalBody.scrollTop + (lineHeight - cursorHeight) / 2;
+
+            terminalCursor.style.left = `${left}px`;
+            terminalCursor.style.top = `${top}px`;
+            terminalCursor.style.width = `${fontSize * 0.72}px`;
+            terminalCursor.style.height = `${cursorHeight}px`;
+            terminalCursor.classList.add('visible');
+        };
 
         terminalWindow.addEventListener('click', (event) => {
-            if (event.target !== terminalEditor) {
-                terminalEditor.focus({ preventScroll: true });
-                const end = terminalEditor.value.length;
-                terminalEditor.setSelectionRange(end, end);
-            }
+            if (event.target.closest('.terminal-line-input')) return;
+
+            const clickedLine = event.target.closest('.terminal-line');
+            const targetLine = clickedLine || terminalEditor.lastElementChild;
+            const targetInput = getLineInput(targetLine);
+            setCaret(targetInput, targetInput.textContent.length);
         });
 
         terminalEditor.addEventListener('keydown', (event) => {
-            if (event.key !== 'Enter' || event.isComposing) return;
+            const input = event.target.closest('.terminal-line-input');
+            if (!input) return;
 
-            event.preventDefault();
-            terminalEditor.setRangeText(
-                '\n> ',
-                terminalEditor.selectionStart,
-                terminalEditor.selectionEnd,
-                'end'
-            );
+            const offsets = getSelectionOffsets(input);
+            if (!offsets) return;
+
+            if (event.key === 'Enter' && !event.isComposing) {
+                event.preventDefault();
+                const value = input.textContent;
+                const currentLine = input.closest('.terminal-line');
+                const nextLine = createLine(value.slice(offsets.end));
+
+                input.textContent = value.slice(0, offsets.start);
+                currentLine.after(nextLine);
+                setCaret(getLineInput(nextLine), 0);
+                return;
+            }
+
+            if (event.key === 'Backspace' && offsets.collapsed && offsets.start === 0) {
+                event.preventDefault();
+                const currentLine = input.closest('.terminal-line');
+                const previousLine = currentLine.previousElementSibling;
+
+                if (input.textContent.length === 0 && previousLine) {
+                    currentLine.remove();
+                    const previousInput = getLineInput(previousLine);
+                    setCaret(previousInput, previousInput.textContent.length);
+                }
+            }
         });
+
+        terminalEditor.addEventListener('input', () => requestAnimationFrame(updateCursor));
+        terminalEditor.addEventListener('keyup', () => requestAnimationFrame(updateCursor));
+        terminalEditor.addEventListener('click', () => requestAnimationFrame(updateCursor));
+        terminalEditor.addEventListener('scroll', () => requestAnimationFrame(updateCursor), { passive: true });
+        document.addEventListener('selectionchange', updateCursor);
+        window.addEventListener('resize', () => requestAnimationFrame(updateCursor), { passive: true });
+        requestAnimationFrame(updateCursor);
     }
     
     setupScrollAnimations() {

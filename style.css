@@ -175,6 +175,7 @@ body {
 }
 
 .terminal-body {
+    position: relative;
     height: calc(100% - 46px);
     padding: clamp(1.2rem, 3vw, 2rem);
     overflow: hidden;
@@ -189,24 +190,51 @@ body {
 .terminal-editor {
     width: 100%;
     height: 100%;
-    padding: 0;
-    resize: none;
     overflow: auto;
-    border: 0;
-    outline: 0;
-    background: transparent;
-    color: #59ff80;
-    caret-color: #59ff80;
-    caret-shape: block;
-    font: inherit;
-    line-height: inherit;
-    text-shadow: inherit;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
 }
 
-.terminal-editor::selection {
+.terminal-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    min-height: 1.7em;
+}
+
+.terminal-prompt {
+    flex: 0 0 auto;
+    color: #59ff80;
+    line-height: 1.7;
+    user-select: none;
+}
+
+.terminal-line-input {
+    flex: 1;
+    min-width: 0;
+    min-height: 1.7em;
+    outline: 0;
+    color: #59ff80;
+    caret-color: transparent;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.terminal-line-input::selection {
     background: rgba(89, 255, 128, 0.28);
+}
+
+.terminal-cursor {
+    position: absolute;
+    z-index: 2;
+    display: none;
+    pointer-events: none;
+    background: #59ff80;
+    box-shadow: 0 0 10px rgba(89, 255, 128, 0.72);
+    animation: terminalCursorBlink 1s steps(1, end) infinite;
+}
+
+.terminal-cursor.visible {
+    display: block;
 }
 
 .slide-pagination {
@@ -483,6 +511,15 @@ body[data-current-slide="1"] .slide-dot.active {
     }
 }
 
+@keyframes terminalCursorBlink {
+    0%, 46% {
+        opacity: 1;
+    }
+    47%, 100% {
+        opacity: 0;
+    }
+}
+
 @media (max-width: 768px) {
     .hero {
         padding: 1rem;
@@ -571,6 +608,10 @@ body[data-current-slide="1"] .slide-dot.active {
 
     .slide-deck {
         transition: none;
+    }
+
+    .terminal-cursor {
+        animation: none;
     }
 
 }

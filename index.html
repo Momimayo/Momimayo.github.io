@@ -51,8 +51,14 @@
                 </div>
                 <span class="terminal-title">Terminal</span>
             </div>
-            <div class="terminal-body">
-                <textarea class="terminal-editor" id="terminalEditor" aria-label="Terminal input" autocomplete="off" autocapitalize="off" spellcheck="false" wrap="soft">&gt; </textarea>
+            <div class="terminal-body" id="terminalBody">
+                <div class="terminal-editor" id="terminalEditor" role="textbox" aria-label="Terminal input" aria-multiline="true">
+                    <div class="terminal-line">
+                        <span class="terminal-prompt" aria-hidden="true">&gt;</span>
+                        <span class="terminal-line-input" contenteditable="plaintext-only" autocapitalize="off" spellcheck="false"></span>
+                    </div>
+                </div>
+                <span class="terminal-cursor" id="terminalCursor" aria-hidden="true"></span>
             </div>
         </div>
     </section>
