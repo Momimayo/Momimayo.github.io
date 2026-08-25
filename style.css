@@ -191,34 +191,18 @@ body {
 
 .terminal-startup {
     flex: 0 0 auto;
-    margin-bottom: clamp(1rem, 2.5vw, 1.6rem);
-    text-align: center;
+    margin-bottom: 0.7rem;
+    text-align: left;
     user-select: none;
 }
 
 .terminal-logo {
-    display: inline-block;
+    display: block;
     color: #59ff80;
     font: 700 clamp(4px, 0.78vw, 9px)/0.98 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     letter-spacing: 0;
     text-align: left;
     text-shadow: 0 0 9px rgba(89, 255, 128, 0.48);
-}
-
-.terminal-logo-caption {
-    margin-top: 0.7rem;
-    color: rgba(89, 255, 128, 0.72);
-    font-size: clamp(9px, 1vw, 11px);
-    letter-spacing: 0.18em;
-}
-
-.terminal-startup::after {
-    content: '';
-    display: block;
-    width: min(72%, 430px);
-    height: 1px;
-    margin: 0.8rem auto 0;
-    background: linear-gradient(90deg, transparent, rgba(89, 255, 128, 0.34), transparent);
 }
 
 .terminal-editor {
@@ -593,15 +577,7 @@ body[data-current-slide="1"] .slide-dot.active {
     }
 
     .terminal-startup {
-        margin-bottom: 0.9rem;
-    }
-
-    .terminal-logo-caption {
-        margin-top: 0.5rem;
-    }
-
-    .terminal-startup::after {
-        margin-top: 0.55rem;
+        margin-bottom: 0.55rem;
     }
 
     .terminal-editor {
