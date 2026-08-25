@@ -362,10 +362,6 @@ class AppleUI {
                 terminalEditor.focus();
             }
         });
-
-        terminalEditor.addEventListener('input', () => {
-            terminalEditor.classList.toggle('is-empty', terminalEditor.textContent.length === 0);
-        });
     }
     
     setupScrollAnimations() {

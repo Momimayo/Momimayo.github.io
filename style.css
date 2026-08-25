@@ -201,23 +201,20 @@ body {
     min-height: 100%;
     outline: 0;
     color: #59ff80;
-    caret-color: #59ff80;
+    caret-color: transparent;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
 }
 
-.terminal-editor.is-empty {
-    caret-color: transparent;
-}
-
-.terminal-editor.is-empty::before {
+.terminal-editor::after {
     content: '';
     display: inline-block;
-    width: 0.62em;
-    height: 1.12em;
-    vertical-align: -0.18em;
+    width: 0.72em;
+    height: 1.18em;
+    margin-left: 0.08em;
+    vertical-align: -0.2em;
     background: #59ff80;
-    box-shadow: 0 0 9px rgba(89, 255, 128, 0.65);
+    box-shadow: 0 0 10px rgba(89, 255, 128, 0.72);
     animation: terminalCursorBlink 1s steps(1, end) infinite;
 }
 
@@ -598,7 +595,7 @@ body[data-current-slide="1"] .slide-dot.active {
         transition: none;
     }
 
-    .terminal-editor.is-empty::before {
+    .terminal-editor::after {
         animation: none;
     }
 }
