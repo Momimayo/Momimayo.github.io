@@ -46,12 +46,14 @@ class AppleUI {
     }
     
     setupLanguageSelector() {
-        const langButtons = document.querySelectorAll('.lang-btn');
+        const languageToggle = document.getElementById('languageToggle');
         const heroTitle = document.querySelector('.hero-title');
         const heroSlogan = document.querySelector('.hero-slogan');
         const heroSubtitle = document.querySelector('.hero-subtitle');
         const primaryBtn = document.getElementById('primaryBtn');
         const secondaryBtn = document.getElementById('secondaryBtn');
+        const languages = ['zh', 'ja', 'en'];
+        const languageNames = { zh: '中文', ja: '日本語', en: 'English' };
         
         const translations = {
             zh: {
@@ -77,23 +79,38 @@ class AppleUI {
             }
         };
         
-        langButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const lang = btn.getAttribute('data-lang');
-                const text = translations[lang];
-                
-                // 移除其他按钮的激活状态
-                langButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                // 动画切换文本
+        const applyLanguage = (lang, animate = true) => {
+            const text = translations[lang];
+
+            if (animate) {
                 this.animateTextChange(heroTitle, text.title);
                 this.animateTextChange(heroSlogan, text.slogan);
                 this.animateTextChange(heroSubtitle, text.subtitle, true);
                 this.animateTextChange(primaryBtn, text.primary);
                 this.animateTextChange(secondaryBtn, text.secondary);
-            });
+            } else {
+                heroTitle.textContent = text.title;
+                heroSlogan.textContent = text.slogan;
+                heroSubtitle.innerHTML = text.subtitle;
+                primaryBtn.textContent = text.primary;
+                secondaryBtn.textContent = text.secondary;
+            }
+
+            document.documentElement.lang = lang;
+            languageToggle.dataset.lang = lang;
+            languageToggle.setAttribute('aria-label', `切换语言，当前：${languageNames[lang]}`);
+            languageToggle.title = `当前语言：${languageNames[lang]}`;
+            localStorage.setItem('language', lang);
+        };
+
+        const savedLanguage = localStorage.getItem('language');
+        const initialLanguage = languages.includes(savedLanguage) ? savedLanguage : 'zh';
+        applyLanguage(initialLanguage, false);
+
+        languageToggle.addEventListener('click', () => {
+            const currentIndex = languages.indexOf(languageToggle.dataset.lang);
+            const nextLanguage = languages[(currentIndex + 1) % languages.length];
+            applyLanguage(nextLanguage);
         });
     }
     
@@ -213,7 +230,7 @@ class AppleUI {
     }
     
     addRippleEffect() {
-        document.querySelectorAll('.lang-btn, .cta-btn').forEach(button => {
+        document.querySelectorAll('.language-toggle, .cta-btn').forEach(button => {
             button.addEventListener('click', (e) => {
                 const ripple = document.createElement('span');
                 const rect = button.getBoundingClientRect();
@@ -278,7 +295,7 @@ class AppleUI {
     
     setupTopNavHover() {
         const topNav = document.querySelector('.top-nav');
-        const languageSelector = document.querySelector('.language-selector');
+        const languageToggle = document.querySelector('.language-toggle');
         const themeToggle = document.querySelector('.theme-toggle');
         
         // 为了确保在移动设备上也能正常工作，添加触摸事件支持
@@ -286,9 +303,9 @@ class AppleUI {
         
         const showNavElements = () => {
             clearTimeout(hoverTimeout);
-            if (languageSelector && themeToggle) {
-                languageSelector.style.opacity = '1';
-                languageSelector.style.transform = 'translateX(-50%) translateY(0)';
+            if (languageToggle && themeToggle) {
+                languageToggle.style.opacity = '1';
+                languageToggle.style.transform = 'translateY(0)';
                 themeToggle.style.opacity = '1';
                 themeToggle.style.transform = 'translateY(0)';
             }
@@ -296,9 +313,9 @@ class AppleUI {
         
         const hideNavElements = () => {
             hoverTimeout = setTimeout(() => {
-                if (languageSelector && themeToggle) {
-                    languageSelector.style.opacity = '0';
-                    languageSelector.style.transform = 'translateX(-50%) translateY(-20px)';
+                if (languageToggle && themeToggle) {
+                    languageToggle.style.opacity = '0';
+                    languageToggle.style.transform = 'translateY(-20px)';
                     themeToggle.style.opacity = '0';
                     themeToggle.style.transform = 'translateY(-20px)';
                 }
