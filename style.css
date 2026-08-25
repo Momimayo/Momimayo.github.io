@@ -118,9 +118,9 @@ body {
 
 .terminal-app {
     position: relative;
-    width: min(820px, 100%);
-    height: min(58vh, 480px);
-    min-height: 340px;
+    width: min(680px, 88vw);
+    height: min(52vh, 440px);
+    min-height: 320px;
     overflow: hidden;
     border: 1px solid rgba(89, 255, 128, 0.34);
     border-radius: 14px;
@@ -199,7 +199,7 @@ body {
 .terminal-logo {
     display: block;
     color: #59ff80;
-    font: 700 clamp(4px, 0.78vw, 9px)/0.98 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font: 700 clamp(3.5px, 0.62vw, 7.5px)/0.98 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     letter-spacing: 0;
     text-align: left;
     text-shadow: 0 0 9px rgba(89, 255, 128, 0.48);
@@ -567,8 +567,8 @@ body[data-current-slide="1"] .slide-dot.active {
     }
 
     .terminal-app {
-        height: min(64svh, 520px);
-        min-height: 320px;
+        height: min(52svh, 400px);
+        min-height: 300px;
     }
 
     .terminal-body {
@@ -581,7 +581,7 @@ body[data-current-slide="1"] .slide-dot.active {
     }
 
     .terminal-editor {
-        min-height: 100%;
+        min-height: 0;
     }
 
     .slide-pagination {
