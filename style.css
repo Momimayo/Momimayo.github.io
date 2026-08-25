@@ -176,6 +176,8 @@ body {
 
 .terminal-body {
     position: relative;
+    display: flex;
+    flex-direction: column;
     height: calc(100% - 46px);
     padding: clamp(1.2rem, 3vw, 2rem);
     overflow: hidden;
@@ -187,9 +189,43 @@ body {
     box-shadow: 0 0 32px rgba(40, 255, 95, 0.04) inset;
 }
 
+.terminal-startup {
+    flex: 0 0 auto;
+    margin-bottom: clamp(1rem, 2.5vw, 1.6rem);
+    text-align: center;
+    user-select: none;
+}
+
+.terminal-logo {
+    display: inline-block;
+    color: #59ff80;
+    font: 700 clamp(4px, 0.78vw, 9px)/0.98 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: 0;
+    text-align: left;
+    text-shadow: 0 0 9px rgba(89, 255, 128, 0.48);
+}
+
+.terminal-logo-caption {
+    margin-top: 0.7rem;
+    color: rgba(89, 255, 128, 0.72);
+    font-size: clamp(9px, 1vw, 11px);
+    letter-spacing: 0.18em;
+}
+
+.terminal-startup::after {
+    content: '';
+    display: block;
+    width: min(72%, 430px);
+    height: 1px;
+    margin: 0.8rem auto 0;
+    background: linear-gradient(90deg, transparent, rgba(89, 255, 128, 0.34), transparent);
+}
+
 .terminal-editor {
+    flex: 1;
+    min-height: 0;
     width: 100%;
-    height: 100%;
+    height: auto;
     overflow: auto;
 }
 
@@ -554,6 +590,18 @@ body[data-current-slide="1"] .slide-dot.active {
     .terminal-body {
         padding: 1.1rem;
         font-size: 12px;
+    }
+
+    .terminal-startup {
+        margin-bottom: 0.9rem;
+    }
+
+    .terminal-logo-caption {
+        margin-top: 0.5rem;
+    }
+
+    .terminal-startup::after {
+        margin-top: 0.55rem;
     }
 
     .terminal-editor {
