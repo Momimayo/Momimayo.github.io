@@ -40,15 +40,23 @@
         </button>
     </section>
 
-    <section class="reflection slide" id="reflection" data-slide="1">
-        <div class="reflection-content">
-            <p class="reflection-eyebrow" id="reflectionEyebrow">第二章 · 留白</p>
-            <h2 class="reflection-title" id="reflectionTitle">一隅</h2>
-            <p class="reflection-text" id="reflectionText">留一点空白，让光影、时间与心绪自然抵达。</p>
-            <div class="principles" aria-label="侘寂的三个意象">
-                <span id="principleOne">不完美</span>
-                <span id="principleTwo">无常</span>
-                <span id="principleThree">留白</span>
+    <section class="terminal-slide slide" id="terminal" data-slide="1">
+        <div class="terminal-window" id="terminalWindow">
+            <div class="terminal-bar">
+                <div class="terminal-controls" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <span class="terminal-title">momimayo@void: ~</span>
+            </div>
+            <div class="terminal-screen">
+                <p><span class="terminal-green">Linux void</span> 6.6.0 x86_64</p>
+                <p class="terminal-muted">guest session · input only · commands disabled</p>
+                <label class="terminal-input-row" for="terminalInput">
+                    <span class="terminal-prompt">momimayo@void:~$</span>
+                    <textarea id="terminalInput" rows="1" aria-label="Terminal input" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+                </label>
             </div>
         </div>
     </section>
