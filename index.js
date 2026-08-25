@@ -359,41 +359,23 @@ class AppleUI {
 
         terminalWindow.addEventListener('click', (event) => {
             if (event.target !== terminalEditor) {
-                terminalEditor.focus();
+                terminalEditor.focus({ preventScroll: true });
+                const end = terminalEditor.value.length;
+                terminalEditor.setSelectionRange(end, end);
             }
         });
 
-        const insertNewline = () => {
-            const selection = window.getSelection();
-            if (!selection || selection.rangeCount === 0) return;
+        terminalEditor.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter' || event.isComposing) return;
 
-            const range = selection.getRangeAt(0);
-            if (!terminalEditor.contains(range.commonAncestorContainer)) return;
-
-            range.deleteContents();
-            const newline = document.createTextNode('\n');
-            range.insertNode(newline);
-            range.setStartAfter(newline);
-            range.collapse(true);
-            selection.removeAllRanges();
-            selection.addRange(range);
-        };
-
-        terminalEditor.addEventListener('beforeinput', (event) => {
-            if (event.inputType === 'insertParagraph' || event.inputType === 'insertLineBreak') {
-                event.preventDefault();
-                insertNewline();
-            }
+            event.preventDefault();
+            terminalEditor.setRangeText(
+                '\n> ',
+                terminalEditor.selectionStart,
+                terminalEditor.selectionEnd,
+                'end'
+            );
         });
-
-        if (!('onbeforeinput' in terminalEditor)) {
-            terminalEditor.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                    insertNewline();
-                }
-            });
-        }
     }
     
     setupScrollAnimations() {
