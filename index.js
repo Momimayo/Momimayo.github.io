@@ -222,6 +222,8 @@ class AppleUI {
         const slides = Array.from(document.querySelectorAll('.slide'));
         const slideDots = Array.from(document.querySelectorAll('.slide-dot'));
         const nextSlideButton = document.getElementById('nextSlide');
+        const slideDeck = document.getElementById('slideDeck');
+        const mobileSlideMode = window.matchMedia('(max-width: 768px) and (pointer: coarse)').matches;
         let touchStartX = 0;
         let touchStartY = 0;
         let touchStartedOnControl = false;
@@ -246,6 +248,22 @@ class AppleUI {
 
             this.slideScrollLocked = true;
             updatePagination(targetIndex);
+
+            if (mobileSlideMode) {
+                let transitionFinished = false;
+                const finishMobileTransition = (event) => {
+                    if (event && (event.target !== slideDeck || event.propertyName !== 'transform')) return;
+                    if (transitionFinished) return;
+                    transitionFinished = true;
+                    this.slideScrollLocked = false;
+                    slideDeck.removeEventListener('transitionend', finishMobileTransition);
+                };
+
+                slideDeck.addEventListener('transitionend', finishMobileTransition);
+                setTimeout(finishMobileTransition, 850);
+                return;
+            }
+
             slides[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             setTimeout(() => {
@@ -280,7 +298,7 @@ class AppleUI {
         }, { passive: false });
 
         window.addEventListener('touchstart', (event) => {
-            if (event.touches.length !== 1) return;
+            if (!mobileSlideMode || event.touches.length !== 1) return;
             const target = event.target;
             touchStartedOnControl = target instanceof Element && Boolean(target.closest('textarea, input, button, a, [contenteditable="true"]'));
             touchStartX = event.touches[0].clientX;
@@ -288,7 +306,7 @@ class AppleUI {
         }, { passive: true });
 
         window.addEventListener('touchmove', (event) => {
-            if (touchStartedOnControl || event.touches.length !== 1) return;
+            if (!mobileSlideMode || touchStartedOnControl || event.touches.length !== 1) return;
             const deltaX = event.touches[0].clientX - touchStartX;
             const deltaY = event.touches[0].clientY - touchStartY;
 
@@ -298,7 +316,7 @@ class AppleUI {
         }, { passive: false });
 
         window.addEventListener('touchend', (event) => {
-            if (touchStartedOnControl || event.changedTouches.length !== 1) return;
+            if (!mobileSlideMode || touchStartedOnControl || event.changedTouches.length !== 1) return;
             const deltaX = event.changedTouches[0].clientX - touchStartX;
             const deltaY = event.changedTouches[0].clientY - touchStartY;
 
@@ -325,6 +343,7 @@ class AppleUI {
         });
 
         window.addEventListener('scroll', () => {
+            if (mobileSlideMode) return;
             if (this.slideScrollLocked) return;
             if (paginationFrame === null) {
                 paginationFrame = requestAnimationFrame(syncPaginationToScroll);
