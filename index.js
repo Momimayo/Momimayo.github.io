@@ -47,6 +47,7 @@ class AppleUI {
     
     setupLanguageSelector() {
         const languageToggle = document.getElementById('languageToggle');
+        const languageIcon = document.getElementById('languageIcon');
         const heroTitle = document.querySelector('.hero-title');
         const heroSlogan = document.querySelector('.hero-slogan');
         const heroSubtitle = document.querySelector('.hero-subtitle');
@@ -54,6 +55,7 @@ class AppleUI {
         const secondaryBtn = document.getElementById('secondaryBtn');
         const languages = ['zh', 'ja', 'en'];
         const languageNames = { zh: '中文', ja: '日本語', en: 'English' };
+        const languageIcons = { zh: '中', ja: 'あ', en: 'E' };
         
         const translations = {
             zh: {
@@ -98,6 +100,7 @@ class AppleUI {
 
             document.documentElement.lang = lang;
             languageToggle.dataset.lang = lang;
+            languageIcon.textContent = languageIcons[lang];
             languageToggle.setAttribute('aria-label', `切换语言，当前：${languageNames[lang]}`);
             languageToggle.title = `当前语言：${languageNames[lang]}`;
             localStorage.setItem('language', lang);
