@@ -25,6 +25,10 @@ html {
     --border-color: rgba(139, 115, 85, 0.15);
     --shadow-light: rgba(60, 60, 60, 0.08);
     --shadow-medium: rgba(60, 60, 60, 0.12);
+    --app-shell-bg: #e7e4de;
+    --app-toolbar-bg: #f4f2ee;
+    --app-shell-border: rgba(60, 60, 60, 0.18);
+    --app-title-color: #6f6b65;
     --void-gradient: radial-gradient(circle at center, rgba(139, 115, 85, 0.03) 0%, transparent 70%);
 }
 
@@ -42,6 +46,10 @@ html {
     --border-color: rgba(168, 149, 107, 0.2);
     --shadow-light: rgba(0, 0, 0, 0.4);
     --shadow-medium: rgba(0, 0, 0, 0.6);
+    --app-shell-bg: #24221f;
+    --app-toolbar-bg: #302d29;
+    --app-shell-border: rgba(255, 255, 255, 0.13);
+    --app-title-color: #b8b3ad;
     --void-gradient: radial-gradient(circle at center, rgba(168, 149, 107, 0.05) 0%, transparent 70%);
 }
 
@@ -108,25 +116,29 @@ body {
     overflow: hidden;
 }
 
-.terminal-window {
+.terminal-app {
     position: relative;
     width: min(820px, 100%);
     height: min(58vh, 480px);
     min-height: 340px;
+    padding: 0 12px 12px;
     overflow: hidden;
-    border: 1px solid rgba(89, 255, 128, 0.22);
-    border-radius: 10px;
-    background: #050806;
-    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.26), 0 0 45px rgba(40, 255, 95, 0.05);
+    border: 1px solid var(--app-shell-border);
+    border-radius: 14px;
+    background: var(--app-shell-bg);
+    box-shadow: 0 28px 80px var(--shadow-medium), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+    transition: background 0.6s ease, border-color 0.6s ease, box-shadow 0.6s ease;
 }
 
-.terminal-bar {
+.terminal-toolbar {
     position: relative;
     display: flex;
     align-items: center;
-    height: 42px;
-    border-bottom: 1px solid rgba(89, 255, 128, 0.12);
-    background: #0b100c;
+    height: 46px;
+    margin: 0 -12px;
+    border-bottom: 1px solid var(--app-shell-border);
+    background: var(--app-toolbar-bg);
+    transition: background 0.6s ease, border-color 0.6s ease;
 }
 
 .terminal-controls {
@@ -158,58 +170,47 @@ body {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    color: #6f8173;
-    font: 12px/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    color: var(--app-title-color);
+    font: 500 12px/1.2 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     white-space: nowrap;
+    transition: color 0.6s ease;
 }
 
-.terminal-screen {
-    height: calc(100% - 42px);
-    padding: clamp(1.2rem, 3vw, 2rem);
-    overflow: auto;
-    color: #9fb6a3;
-    font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    text-shadow: 0 0 10px rgba(89, 255, 128, 0.13);
-}
-
-.terminal-green,
-.terminal-prompt {
-    color: #59ff80;
-}
-
-.terminal-muted {
-    margin-bottom: 1.25rem;
-    color: #526557;
-}
-
-.terminal-input-row {
+.terminal-body {
     display: flex;
     align-items: flex-start;
     gap: 0.65rem;
+    height: calc(100% - 58px);
+    padding: clamp(1.2rem, 3vw, 2rem);
+    overflow: auto;
+    border: 1px solid rgba(89, 255, 128, 0.2);
+    border-radius: 7px;
+    background: #020403;
+    color: #59ff80;
+    font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    text-shadow: 0 0 10px rgba(89, 255, 128, 0.22);
     cursor: text;
+    box-shadow: 0 0 32px rgba(40, 255, 95, 0.04) inset;
 }
 
 .terminal-prompt {
     flex: 0 0 auto;
+    color: #59ff80;
     white-space: nowrap;
 }
 
-#terminalInput {
+.terminal-editor {
     flex: 1;
     min-width: 0;
-    min-height: 11rem;
-    padding: 0;
-    resize: none;
-    border: 0;
+    min-height: 100%;
     outline: 0;
-    background: transparent;
-    color: #d3ffdc;
+    color: #59ff80;
     caret-color: #59ff80;
-    font: inherit;
-    line-height: inherit;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
-#terminalInput::selection {
+.terminal-editor::selection {
     background: rgba(89, 255, 128, 0.28);
 }
 
@@ -240,6 +241,16 @@ body {
     background: var(--accent-color);
     opacity: 1;
     transform: scale(1.35);
+}
+
+body[data-current-slide="1"] .slide-dot {
+    border-color: #59ff80;
+    box-shadow: 0 0 8px rgba(89, 255, 128, 0.35);
+}
+
+body[data-current-slide="1"] .slide-dot.active {
+    background: #59ff80;
+    box-shadow: 0 0 12px rgba(89, 255, 128, 0.65);
 }
 
 .hero-background {
@@ -503,28 +514,18 @@ body {
         padding: 4.5rem 1.2rem 2.5rem;
     }
 
-    .terminal-window {
+    .terminal-app {
         height: min(64svh, 520px);
         min-height: 320px;
     }
 
-    .terminal-screen {
+    .terminal-body {
         padding: 1.1rem;
         font-size: 12px;
     }
 
-    .terminal-input-row {
-        display: block;
-    }
-
-    .terminal-prompt {
-        display: block;
-        margin-bottom: 0.25rem;
-    }
-
-    #terminalInput {
-        width: 100%;
-        min-height: 10rem;
+    .terminal-editor {
+        min-height: 100%;
     }
 
     .slide-pagination {

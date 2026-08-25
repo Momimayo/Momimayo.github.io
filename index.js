@@ -228,6 +228,7 @@ class AppleUI {
 
         const updatePagination = (index) => {
             this.currentSlide = index;
+            document.body.dataset.currentSlide = String(index);
             slideDots.forEach((dot, dotIndex) => {
                 const isActive = dotIndex === index;
                 dot.classList.toggle('active', isActive);
@@ -249,7 +250,25 @@ class AppleUI {
 
             setTimeout(() => {
                 this.slideScrollLocked = false;
+                syncPaginationToScroll();
             }, 900);
+        };
+
+        let paginationFrame = null;
+        const syncPaginationToScroll = () => {
+            paginationFrame = null;
+            let nearestIndex = 0;
+            let nearestDistance = Infinity;
+
+            slides.forEach((slide, index) => {
+                const distance = Math.abs(slide.getBoundingClientRect().top);
+                if (distance < nearestDistance) {
+                    nearestDistance = distance;
+                    nearestIndex = index;
+                }
+            });
+
+            updatePagination(nearestIndex);
         };
 
         window.addEventListener('wheel', (event) => {
@@ -263,7 +282,7 @@ class AppleUI {
         window.addEventListener('touchstart', (event) => {
             if (event.touches.length !== 1) return;
             const target = event.target;
-            touchStartedOnControl = target instanceof Element && Boolean(target.closest('textarea, input, button, a'));
+            touchStartedOnControl = target instanceof Element && Boolean(target.closest('textarea, input, button, a, [contenteditable="true"]'));
             touchStartX = event.touches[0].clientX;
             touchStartY = event.touches[0].clientY;
         }, { passive: true });
@@ -289,7 +308,7 @@ class AppleUI {
         }, { passive: true });
 
         window.addEventListener('keydown', (event) => {
-            if (event.target instanceof Element && event.target.closest('button, a, input, textarea, select')) return;
+            if (event.target instanceof Element && event.target.closest('button, a, input, textarea, select, [contenteditable="true"]')) return;
 
             if (['ArrowDown', 'PageDown', ' '].includes(event.key)) {
                 event.preventDefault();
@@ -305,24 +324,23 @@ class AppleUI {
             dot.addEventListener('click', () => goToSlide(Number(dot.dataset.slideTarget)));
         });
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-                    updatePagination(Number(entry.target.dataset.slide));
-                }
-            });
-        }, { threshold: 0.6 });
+        window.addEventListener('scroll', () => {
+            if (this.slideScrollLocked) return;
+            if (paginationFrame === null) {
+                paginationFrame = requestAnimationFrame(syncPaginationToScroll);
+            }
+        }, { passive: true });
 
-        slides.forEach((slide) => observer.observe(slide));
+        syncPaginationToScroll();
     }
 
     setupTerminal() {
         const terminalWindow = document.getElementById('terminalWindow');
-        const terminalInput = document.getElementById('terminalInput');
+        const terminalEditor = document.getElementById('terminalEditor');
 
         terminalWindow.addEventListener('click', (event) => {
-            if (event.target !== terminalInput) {
-                terminalInput.focus();
+            if (event.target !== terminalEditor) {
+                terminalEditor.focus();
             }
         });
     }

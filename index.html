@@ -41,22 +41,18 @@
     </section>
 
     <section class="terminal-slide slide" id="terminal" data-slide="1">
-        <div class="terminal-window" id="terminalWindow">
-            <div class="terminal-bar">
+        <div class="terminal-app" id="terminalWindow">
+            <div class="terminal-toolbar">
                 <div class="terminal-controls" aria-hidden="true">
                     <span></span>
                     <span></span>
                     <span></span>
                 </div>
-                <span class="terminal-title">momimayo@void: ~</span>
+                <span class="terminal-title">Terminal</span>
             </div>
-            <div class="terminal-screen">
-                <p><span class="terminal-green">Linux void</span> 6.6.0 x86_64</p>
-                <p class="terminal-muted">guest session · input only · commands disabled</p>
-                <label class="terminal-input-row" for="terminalInput">
-                    <span class="terminal-prompt">momimayo@void:~$</span>
-                    <textarea id="terminalInput" rows="1" aria-label="Terminal input" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
-                </label>
+            <div class="terminal-body">
+                <span class="terminal-prompt" aria-hidden="true">&gt;</span>
+                <div class="terminal-editor" id="terminalEditor" contenteditable="true" role="textbox" aria-label="Terminal input" aria-multiline="true" autocapitalize="off" spellcheck="false"></div>
             </div>
         </div>
     </section>
