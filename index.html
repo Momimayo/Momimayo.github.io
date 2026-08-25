@@ -22,7 +22,7 @@
         </button>
     </div>
     
-    <section class="hero">
+    <section class="hero slide" id="home" data-slide="0">
         <div class="hero-background"></div>
         <div class="hero-content">
             <h1 class="hero-title">侘寂</h1>
@@ -34,7 +34,29 @@
                 <button class="cta-btn secondary" id="secondaryBtn">冥想</button>
             </div>
         </div>
+
+        <button class="scroll-cue" id="nextSlide" aria-label="前往下一页" title="前往下一页">
+            <span aria-hidden="true">⌄</span>
+        </button>
     </section>
+
+    <section class="reflection slide" id="reflection" data-slide="1">
+        <div class="reflection-content">
+            <p class="reflection-eyebrow" id="reflectionEyebrow">第二章 · 留白</p>
+            <h2 class="reflection-title" id="reflectionTitle">一隅</h2>
+            <p class="reflection-text" id="reflectionText">留一点空白，让光影、时间与心绪自然抵达。</p>
+            <div class="principles" aria-label="侘寂的三个意象">
+                <span id="principleOne">不完美</span>
+                <span id="principleTwo">无常</span>
+                <span id="principleThree">留白</span>
+            </div>
+        </div>
+    </section>
+
+    <nav class="slide-pagination" aria-label="页面导航">
+        <button class="slide-dot active" data-slide-target="0" aria-label="第 1 页" aria-current="true"></button>
+        <button class="slide-dot" data-slide-target="1" aria-label="第 2 页"></button>
+    </nav>
     
     <script src="index.js"></script>
 </body>

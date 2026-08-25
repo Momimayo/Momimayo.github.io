@@ -4,6 +4,8 @@ class AppleUI {
         this.currentNotification = null;
         this.notificationTimeout = null;
         this.notificationRemovalTimeout = null;
+        this.currentSlide = 0;
+        this.slideScrollLocked = false;
         this.init();
     }
     
@@ -12,6 +14,7 @@ class AppleUI {
         this.setupLanguageSelector();
         this.setupButtons();
         this.createFloatingElements();
+        this.setupSlideNavigation();
         this.setupScrollAnimations();
         this.addRippleEffect();
         this.addBreathingAnimation();
@@ -53,6 +56,12 @@ class AppleUI {
         const heroSubtitle = document.querySelector('.hero-subtitle');
         const primaryBtn = document.getElementById('primaryBtn');
         const secondaryBtn = document.getElementById('secondaryBtn');
+        const reflectionEyebrow = document.getElementById('reflectionEyebrow');
+        const reflectionTitle = document.getElementById('reflectionTitle');
+        const reflectionText = document.getElementById('reflectionText');
+        const principleOne = document.getElementById('principleOne');
+        const principleTwo = document.getElementById('principleTwo');
+        const principleThree = document.getElementById('principleThree');
         const languages = ['zh', 'ja', 'en'];
         const languageNames = { zh: '中文', ja: '日本語', en: 'English' };
         const languageIcons = { zh: '中', ja: 'あ', en: 'E' };
@@ -63,21 +72,33 @@ class AppleUI {
                 slogan: 'Grace in the Void',
                 subtitle: '在虚无中发现优雅，在不完美中寻找美的本质<br>Finding elegance in emptiness, discovering beauty in imperfection',
                 primary: '静观',
-                secondary: '冥想'
+                secondary: '冥想',
+                reflectionEyebrow: '第二章 · 留白',
+                reflectionTitle: '一隅',
+                reflectionText: '留一点空白，让光影、时间与心绪自然抵达。',
+                principles: ['不完美', '无常', '留白']
             },
             ja: {
                 title: '侘寂',
                 slogan: 'Grace in the Void',
                 subtitle: '空虚の中に優雅さを見つけ、不完全さの中に美の本質を探る<br>虚無から生まれる美しさ、欠けたものの中にある完全性',
                 primary: '静観',
-                secondary: '瞑想'
+                secondary: '瞑想',
+                reflectionEyebrow: '第二章 · 余白',
+                reflectionTitle: '一隅',
+                reflectionText: '余白を残し、光と影、時間、そして心の動きを静かに迎える。',
+                principles: ['不完全', '無常', '余白']
             },
             en: {
                 title: 'Wabi-Sabi',
                 slogan: 'Grace in the Void',
                 subtitle: 'Finding elegance in emptiness, discovering beauty in imperfection<br>The art of embracing what is incomplete and transient',
                 primary: 'Contemplate',
-                secondary: 'Meditate'
+                secondary: 'Meditate',
+                reflectionEyebrow: 'Chapter II · Negative Space',
+                reflectionTitle: 'A Quiet Corner',
+                reflectionText: 'Leave room for light, time, and thought to arrive in their own way.',
+                principles: ['Imperfection', 'Impermanence', 'Emptiness']
             }
         };
         
@@ -90,12 +111,24 @@ class AppleUI {
                 this.animateTextChange(heroSubtitle, text.subtitle, true);
                 this.animateTextChange(primaryBtn, text.primary);
                 this.animateTextChange(secondaryBtn, text.secondary);
+                this.animateTextChange(reflectionEyebrow, text.reflectionEyebrow);
+                this.animateTextChange(reflectionTitle, text.reflectionTitle);
+                this.animateTextChange(reflectionText, text.reflectionText);
+                this.animateTextChange(principleOne, text.principles[0]);
+                this.animateTextChange(principleTwo, text.principles[1]);
+                this.animateTextChange(principleThree, text.principles[2]);
             } else {
                 heroTitle.textContent = text.title;
                 heroSlogan.textContent = text.slogan;
                 heroSubtitle.innerHTML = text.subtitle;
                 primaryBtn.textContent = text.primary;
                 secondaryBtn.textContent = text.secondary;
+                reflectionEyebrow.textContent = text.reflectionEyebrow;
+                reflectionTitle.textContent = text.reflectionTitle;
+                reflectionText.textContent = text.reflectionText;
+                principleOne.textContent = text.principles[0];
+                principleTwo.textContent = text.principles[1];
+                principleThree.textContent = text.principles[2];
             }
 
             document.documentElement.lang = lang;
@@ -212,6 +245,73 @@ class AppleUI {
             
             container.appendChild(element);
         }
+    }
+
+    setupSlideNavigation() {
+        const slides = Array.from(document.querySelectorAll('.slide'));
+        const slideDots = Array.from(document.querySelectorAll('.slide-dot'));
+        const nextSlideButton = document.getElementById('nextSlide');
+
+        const updatePagination = (index) => {
+            this.currentSlide = index;
+            slideDots.forEach((dot, dotIndex) => {
+                const isActive = dotIndex === index;
+                dot.classList.toggle('active', isActive);
+                if (isActive) {
+                    dot.setAttribute('aria-current', 'true');
+                } else {
+                    dot.removeAttribute('aria-current');
+                }
+            });
+        };
+
+        const goToSlide = (index) => {
+            const targetIndex = Math.max(0, Math.min(index, slides.length - 1));
+            if (targetIndex === this.currentSlide || this.slideScrollLocked) return;
+
+            this.slideScrollLocked = true;
+            updatePagination(targetIndex);
+            slides[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            setTimeout(() => {
+                this.slideScrollLocked = false;
+            }, 900);
+        };
+
+        window.addEventListener('wheel', (event) => {
+            if (Math.abs(event.deltaY) < 10) return;
+            event.preventDefault();
+            if (this.slideScrollLocked) return;
+
+            goToSlide(this.currentSlide + (event.deltaY > 0 ? 1 : -1));
+        }, { passive: false });
+
+        window.addEventListener('keydown', (event) => {
+            if (event.target instanceof Element && event.target.closest('button, a, input, textarea, select')) return;
+
+            if (['ArrowDown', 'PageDown', ' '].includes(event.key)) {
+                event.preventDefault();
+                goToSlide(this.currentSlide + 1);
+            } else if (['ArrowUp', 'PageUp'].includes(event.key)) {
+                event.preventDefault();
+                goToSlide(this.currentSlide - 1);
+            }
+        });
+
+        nextSlideButton.addEventListener('click', () => goToSlide(1));
+        slideDots.forEach((dot) => {
+            dot.addEventListener('click', () => goToSlide(Number(dot.dataset.slideTarget)));
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+                    updatePagination(Number(entry.target.dataset.slide));
+                }
+            });
+        }, { threshold: 0.6 });
+
+        slides.forEach((slide) => observer.observe(slide));
     }
     
     setupScrollAnimations() {
