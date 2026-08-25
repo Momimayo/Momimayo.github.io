@@ -206,6 +206,21 @@ body {
     overflow-wrap: anywhere;
 }
 
+.terminal-editor.is-empty {
+    caret-color: transparent;
+}
+
+.terminal-editor.is-empty::before {
+    content: '';
+    display: inline-block;
+    width: 0.62em;
+    height: 1.12em;
+    vertical-align: -0.18em;
+    background: #59ff80;
+    box-shadow: 0 0 9px rgba(89, 255, 128, 0.65);
+    animation: terminalCursorBlink 1s steps(1, end) infinite;
+}
+
 .terminal-editor::selection {
     background: rgba(89, 255, 128, 0.28);
 }
@@ -484,6 +499,15 @@ body[data-current-slide="1"] .slide-dot.active {
     }
 }
 
+@keyframes terminalCursorBlink {
+    0%, 46% {
+        opacity: 1;
+    }
+    47%, 100% {
+        opacity: 0;
+    }
+}
+
 @media (max-width: 768px) {
     .hero {
         padding: 1rem;
@@ -572,6 +596,10 @@ body[data-current-slide="1"] .slide-dot.active {
 
     .slide-deck {
         transition: none;
+    }
+
+    .terminal-editor.is-empty::before {
+        animation: none;
     }
 }
 
